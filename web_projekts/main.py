@@ -2,20 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
-from flask_peewee.db import Database
-from flask_peewee.auth import Auth
-from flask_peewee.admin import Admin, ModelAdmin
-from peewee import TextField
 import seaborn as sns
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, EmailField, FloatField as FF
-from wtforms.validators import DataRequired, Length, EqualTo
-
-matplotlib.use('Agg')
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+from peewee import *
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "turku kebabs"
+matplotlib.use('Agg')
 
 @app.route("/")
 def home():
@@ -51,9 +46,6 @@ def visualize_weapons(weapon_class):
 
     df = pd.read_csv("static/filtered_weapons.csv")
 
-    data = df.to_dict(orient="records")
-    columns = df.columns.tolist()
-
     sns.set_style("darkgrid")
 
     sns.histplot(df["DPS (SINGLE TARGET)"], bins="auto", color="blue")
@@ -72,9 +64,24 @@ def visualize_weapons(weapon_class):
     plt.savefig("static/images/scatterplot2.png")
     plt.close()
 
-    return render_template("visualize.html", columns=columns, data=data, weapon_class=weapon_class)
+    return render_template("visualize.html", weapon_class=weapon_class)
 
-party_members = []
+app.config["SECRET_KEY"] = "turku kebabs"
+
+db = SqliteDatabase("members_db.sqlite")
+
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+class Member(BaseModel):
+    name = CharField()
+    role = CharField()
+    weapon = CharField()
+
+def initialize_db():
+    db.connect()
+    db.create_tables([Member], safe=True)
 
 class AddPartyMember(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -86,30 +93,34 @@ class AddPartyMember(FlaskForm):
 def member():
     form = AddPartyMember()
 
-    if request.method == "POST" and form.validate_on_submit():
-        new_member = {
-            "name": form.name.data,
-            "role": form.role.data,
-            "weapon": form.weapon.data
-        }
-        party_members.append(new_member)
-
+    if form.validate_on_submit():
+  
+        Member.create(
+            name=form.name.data,
+            role=form.role.data,
+            weapon=form.weapon.data
+        )
+        
         form.name.data = ""
         form.role.data = ""
         form.weapon.data = ""
+        
+        return redirect(url_for('member'))
 
-    return render_template("party.html", form=form, members=party_members)
+    members = Member.select()
+    return render_template("party.html", form=form, members=members)
 
-@app.route("/redirect-to-party")
-def redirect_to_party():
-    return redirect(url_for("party"))
+@app.route('/members')
+def show_members():
+    members = Member.select()
+    return render_template('members.html', members=members)
 
 @app.route("/remove_member/<string:name>", methods=["POST"])
 def remove_member(name):
-    global party_members
-    party_members = [m for m in party_members if m["name"] != name]
-    return redirect(url_for("home"))
-
+    delete_member = Member.delete().where(Member.name == name)
+    delete_member.execute()
+    return redirect(url_for('member'))
 
 if __name__ == "__main__":
+    initialize_db()
     app.run(debug=True)
