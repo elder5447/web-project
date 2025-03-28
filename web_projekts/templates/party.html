@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Party Members</title>
+</head>
+<body>
+
+    <a href= />
+        <button type="button">Home</button>
+    </a>
+        
+    <div class="container">
+        <h1>My Party</h1>
+        <p>Add a new party member below:</p>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <label for="name">{{ form.name.label }}</label>
+            {{ form.name() }}
+
+            <label for="role">{{ form.role.label }}</label>
+            {{ form.role() }}
+
+            <label for="weapon">{{ form.weapon.label }}</label>
+            {{ form.weapon() }}
+
+            {{ form.submit() }}
+        </form>
+
+    </div>
+
+        <div class="main-container">
+            {% if members %}
+                <h2>Current Party Members</h2>
+                <ul>
+                    {% for member in members %}
+                        <li>
+                            <strong>{{ member.name }}</strong> ({{ member.role }}) - {{ member.weapon }}
+                            <form action="{{ url_for('remove_member', name=member.name) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="remove-btn">Remove</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No members added yet.</p>
+            {% endif %}
+        </div>
+</body>
+</html>

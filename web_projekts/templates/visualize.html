@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Visualization of data</title>
+</head>
+<body>
+    <a href="/">
+            <button type="button" class="home-button">Home</button>
+        </a>
+    <div class="visualization-container">
+        
+
+        <div class="visualization-section">
+            <div class="chart-header">
+                <h2>Single target DPS histogram</h2>
+            </div>
+            <img src="{{ url_for('static', filename='images/histogram.png') }}" alt="Single target dps histogram" class="chart-image">
+        </div>
+
+        <div class="visualization-section">
+            <div class="chart-header">
+                <h2>Single target DPS scatter plot</h2>
+            </div>
+            <img src="{{ url_for('static', filename='images/scatterplot.png') }}" alt="Single target dps scatter plot" class="chart-image">
+        </div>
+
+        <div class="visualization-section">
+            <div class="chart-header">
+                <h2>Multi target DPS histogram</h2>
+            </div>
+            <img src="{{ url_for('static', filename='images/histogram2.png') }}" alt="Multi target dps histogram" class="chart-image">
+        </div>
+
+        <div class="visualization-section">
+            <div class="chart-header">
+                <h2>Multi target DPS scatter plot</h2>
+            </div>
+            <img src="{{ url_for('static', filename='images/scatterplot2.png') }}" alt="Multi target dps scatter plot" class="chart-image">
+        </div>
+    </div>
+</body>
+</html>

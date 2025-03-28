@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
+
+    <title>All weapons in terarria</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex;">
+
+        <style>
+            a {
+                display: inline-block;
+                margin-right: -4px;
+            }
+        </style>
+
+        <a href= />
+            <button type="button"> Home </button>
+        </a>
+        <a href= /weapons/all>
+            <button type="button"> All </button>
+        </a>
+        <a href= /weapons/melee>
+            <button type="button"><i class="fa fa-shield"></i> Melee </button>
+        </a>
+        <a href= /weapons/mage>
+            <button type="button"><i class="fa fa-magic"></i> Mage </button>
+        </a>
+        <a href= /weapons/ranger>
+            <button type="button"><i class="fa fa-gun"></i> Ranger </button>
+        </a>
+        <a href= /weapons/summoner>
+            <button type="button"><i class="fa fa-hat-wizard"></i> Summoner </button>
+        </a>
+        <a href= /weapons/{{weapon_class}}/visualize>
+            <button type="button"><i class="fa fa-bar-chart"></i> Visualizaton </button>
+        </a>
+        <a href= "{{ url_for('static', filename='filtered_weapons.csv') }}">
+            <button class="btn"><i class="fa fa-download"></i> Download csv file</button>
+        </a>
+        
+    </div>
+<div>
+    
+    <form class="prg" method="get" style="display: inline-block; margin-left: 10px;">
+        <label for="progression">Progress:</label>
+        <select name="progression" onchange="this.form.submit()">
+            <option value="any" {% if current_progression == "any" %}selected{% endif %}>All progressions</option>
+            {% for prog in progressions %}
+                <option value="{{ prog }}" {% if prog == current_progression %}selected{% endif %}>
+                    {{ prog }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <table id="csvTable">
+        <thead>
+            <tr>
+                {% for col in columns %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for col in columns %}
+                        <td>{{ row[col] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
